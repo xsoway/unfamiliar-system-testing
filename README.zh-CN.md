@@ -199,4 +199,4 @@ python3 scripts/validate_skill_package.py unfamiliar-system-testing
 
 ## 维护者
 
-[xulanzhong](https://github.com/xulanzhong) · <xulanzhong521@gmail.com>
+[xulanzhong](https://github.com/xulanzhong) —— 通过 [GitHub Discussions](https://github.com/xsoway/unfamiliar-system-testing/discussions) 或 issue 跟踪器联系（公开渠道，不暴露个人邮箱）

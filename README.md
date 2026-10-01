@@ -199,4 +199,4 @@ Follow the skill's own evidence rule: describe what changed, how it was verified
 
 ## Maintainer
 
-[xulanzhong](https://github.com/xulanzhong) · <xulanzhong521@gmail.com>
+[xulanzhong](https://github.com/xulanzhong) — reach out via [GitHub Discussions](https://github.com/xsoway/unfamiliar-system-testing/discussions) or the issue tracker (public, no personal email exposed)
