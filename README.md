@@ -29,6 +29,7 @@
 - [Core Concepts](#core-concepts)
 - [Structure](#structure)
 - [Quick Start](#quick-start)
+- [Example](#example)
 - [Features](#features)
 - [Safety & Design Principles](#safety--design-principles)
 - [Validating & Testing](#validating--testing)
@@ -117,6 +118,56 @@ skill-up run unfamiliar-system-testing   # or: skill-up run evals/eval.yaml
 ```
 
 The eval harness has three rule-based cases — `basic-success`, `edge-incomplete-input`, `edge-narrow-unknown` — that lock in the expected "minimal model + unknown management" behavior.
+
+## Example
+
+Below is a realistic conversation between a tester and a model running this skill. The tester starts with almost nothing — no architecture docs, no code review yet, just a one-line change request on a legacy internal service. Watch how the skill **builds a minimal model first, separates facts / assumptions / unknowns, cuts test directions to the current system, and always names the next person to ask** — instead of dumping a generic checklist.
+
+> **Context.** `orders-export` is a legacy Python service that turns order rows into CSV files and drops them on a shared SFTP. Change request: *"add a `user_id` filter param to the export"*.
+
+**Tester:** I need to test "add a filter by user_id to the export". I have almost no context. Where do I even start?
+
+**Skill (model running the skill):** Let's not touch a single test case yet — first I'll build a *minimal model* of what this change touches. I'll ask only the 8 questions needed, and mark the ones we can't answer as `Unknown` instead of guessing.
+
+1. **Purpose** — now filter exported rows by `user_id`. ✅ fact (from the request)
+2. **Users** — who calls it? The API consumers (internal), plus the config that scans the SFTP folder. ⚠️ *assumption* — need to confirm
+3. **I/O** — input: new optional `user_id`; output: CSV containing only that user's rows. `user_id` present but not in the export → should the row be excluded? `Unknown`
+4. **Rules** — is `user_id` exclusive with any existing filter (e.g. date range)? Is it required or optional when combined? `Unknown`
+5. **States** — empty result set, huge result set, user with no orders, deleted user id. Not yet defined in tests.
+6. **Dependencies** — DB read path for orders, the CSV writer, SFTP upload. Does the filter apply before or after dedup? `Unknown`
+7. **Failure behavior** — invalid/absent `user_id`, DB timeout on a large filter, SFTP down. Not yet known.
+8. **Max-loss point** — if we emit orders that **don't** belong to the user (a filter bypass), that's a data-leak-style failure: highest risk.
+
+**Tester:** "filter bypass" sounds scary. So what do I *actually* test first?
+
+**Skill (running the skill):** Oracle first. Before writing cases, define how we tell a result is wrong. For this change, the oracle is **"the CSV for `user_id=7` contains only rows where `orders.user_id = 7`"** — checkable by a snapshot comparison against the DB. Now cut test points to this system (not a generic list):
+
+- **Happy path** — `user_id=7` → CSV, all rows match, no header breakage. 
+- **Boundary / input** — `user_id` as non-numeric string, as `0`, as a value that exists but has no orders (empty CSV but exit OK).
+- **Filter bypass (failure path)** — does an order row survive the filter when it belongs to a different user? Check a mixed-batch export and diff the output. This is the ⭐ high-risk point.
+- **State** — filter combined with the existing date-range filter; both filters together (2 rows? excluded edges?).
+- **Dependency** — large `user_id` (10k+ orders) → DB query timeout behavior; SFTP upload still lands.
+- **Compatibility/regression** — calling the endpoint **without** `user_id` must still return the old full export (no silent change).
+
+**Tester:** A couple of those I genuinely don't know the answer for.
+
+**Skill (running the skill):** Good — that's a working state, not a blocker. Here's the explicit unknowns list, each with **who can confirm** and a **way to verify**:
+
+| Unknown | Who to ask | How to verify |
+|---|---|---|
+| Is `user_id` exclusive with the date filter, or additive? | API owner (`@backend-oncall`) | Read the merged PR / ask — don't assume |
+| Does the filter run before or after dedup? | Data team (`@data-warehouse`) | Read the query plan in the merge diff |
+| What happens for `user_id` not in DB? | Service owner | Reproduce against staging with a fake id |
+
+High-risk first: **the filter-bypass case**, because a silent data leak costs more than a missed empty-batch edge case.
+
+**Tester:** Should I ask the model to write these cases for me?
+
+**Skill (running the skill):** Position the AI as **challenger, not author**. Write your first test plan yourself; then ask the model to attack it — point out holes (state combos, filters, oracles you missed). You judge each suggestion. This skill forbids adopting generated business rules without verification.
+
+That conversation is exactly the skill's round: **minimal model → cut test directions → explicit unknowns with owners → oracle-first → next step**. The tester ends with a short, prioritized, verifiable plan instead of a wall of irrelevant generic cases.
+
+> Tip: to replay this against the eval harness (three rule-based cases), run `skill-up run unfamiliar-system-testing` once you have the skill-up runner.
 
 ## Features
 

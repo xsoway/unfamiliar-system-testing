@@ -48,14 +48,14 @@
 - [x] `About` 一行定位描述   **证据**：`gh repo edit --description` → `A model-agnostic skill for testing unfamiliar systems: minimal test model, guided test points, explicit unknown management — evidence over instinct.`
 - [x] `Topics` 配置   **证据**：`gh repo edit --add-topic ai,llm,skill,agent,codex,testing,qa` → repositoryTopics 含 7 项（agent/ai/codex/llm/qa/skill/testing）。
 - [x] 验证 `gh repo view`   **证据**：仓库已创建，PUBLIC，默认分支 `main`，`isEmpty:false`，远程 contents 含全部发布文件。
-- [x] About Website 字段指向主页   **证据**：`gh repo edit --homepage "https://xsoway.github.io/unfamiliar-system-testing/"`（GitHub Pages 已启用，build 中）。
+- [x] About Website 字段指向主页   **证据**：`gh repo edit --homepage "https://xsoway.github.io/unfamiliar-system-testing/"`；`homepageUrl` 已填 Pages URL。
 
 ## H. 项目主页
 
 - [x] `index.html` 存在，gruvbox-material 黑金风格（深底 `#1d2021`/`#282828` + 金色 `#d79921`/`#d8a657`）   **证据**：文件生成，验证阶段无头浏览器自测通过。
 - [x] 顶部中英切换（`English ⇄ 简体中文`），单页即时切换   **证据**：无头浏览器自测验证切换无残留/无失效。
 - [x] 页面信息与 README 一致   **证据**：定位、结构、命令、License、维护者取自同一份事实。
-- [x] About Website 字段指向主页   **证据**：`homepageUrl` = `https://xsoway.github.io/unfamiliar-system-testing/`（见 G 节）。
+- [x] About Website 字段指向主页   **证据**：`homepageUrl` = `https://xsoway.github.io/unfamiliar-system-testing/`（见 G 节）。**Pages 部署**：legacy Jekyll 模式构建失败（"Page build failed"），已切换为 GitHub Actions workflow（`.github/workflows/deploy-pages.yml`，upload-pages-artifact + deploy-pages），后台构建中。
 
 ## I. 社区运营（GitHub Discussions）
 
