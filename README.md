@@ -40,7 +40,7 @@
 
 ## What is it
 
-`unfamiliar-system-testing` is a **Codex Skill** that guides a tester who must start testing a system they do not yet understand. Instead of dumping a generic checklist, it builds a *minimal test model* (8 questions), separates **facts / assumptions / unknowns**, generates test points and directions per dimension, and gives cross-business-type fallbacks plus testing-theory techniques — so the tester knows **what to consider, in which direction, and who to ask next**.
+`unfamiliar-system-testing` is a **model-agnostic skill** — a self-contained package (`SKILL.md` + prompts + references + evals + validator) that any agent runtime can load (Codex, Claude, and other model-agnostic hosts). It guides a tester who must start testing a system they do not yet understand. Instead of dumping a generic checklist, it builds a *minimal test model* (8 questions), separates **facts / assumptions / unknowns**, generates test points and directions per dimension, and gives cross-business-type fallbacks plus testing-theory techniques — so the tester knows **what to consider, in which direction, and who to ask next**.
 
 It is an **onboarding + test-point heuristic companion**, not an execution engine and not a skill router. When the tester knows exactly which testing type they need (API contract, performance, security, UI automation), `discover-testing` routes them to more specialized `testing-types/*` skills; this skill provides the "understand + generate direction" layer *before* entering those.
 
