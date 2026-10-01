@@ -135,6 +135,7 @@
   .clock{font-family:var(--font-mono);font-size:2.4rem;color:var(--accent-2);font-weight:700}
   .clock .sec{color:var(--muted);font-size:1.2rem}
   .now-hint{margin-top:10px;color:var(--muted);font-size:.92rem}
+  .vs-when{margin-top:16px;color:var(--muted);font-size:.92rem;line-height:1.7;border-left:3px solid var(--accent-2);padding:2px 0 2px 14px;max-width:80ch}
   .now-hint b{color:var(--green)}
   .banner{display:inline-block;margin-top:14px;background:rgba(184,187,38,.14);color:var(--green);
     border:1px solid rgba(184,187,38,.4);padding:8px 14px;border-radius:8px;font-size:.86rem}
@@ -175,6 +176,7 @@
     <div class="nav-links">
       <a href="#flow" data-en="Flow" data-zh="流程">Flow</a>
       <a href="#why" data-en="Why" data-zh="为什么">Why</a>
+      <a href="#vs-raw" data-en="vs Raw LLM" data-zh="对比裸问">vs Raw LLM</a>
       <a href="#features" data-en="Features" data-zh="功能">Features</a>
       <a href="#try" data-en="Try" data-zh="试用">Try</a>
       <a href="#tree" data-en="Structure" data-zh="结构">Structure</a>
@@ -241,9 +243,30 @@
   </div>
 </section>
 
+<section id="vs-raw">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">03</span><h2 data-en="Skill vs Asking a Raw LLM" data-zh="与直接问大模型的区别">Skill vs Asking a Raw LLM</h2><span class="sub" data-en="what shapes the output" data-zh="什么在塑造输出">what shapes the output</span></div>
+    <table class="cmp">
+      <thead><tr><th data-en="Asking a raw LLM" data-zh="直接问大模型">Asking a raw LLM</th><th data-en="This skill" data-zh="本技能">This skill</th></tr></thead>
+      <tbody>
+        <tr><td class="no" data-en="Response shaped by training data + chat memory" data-zh="输出由训练数据 + 对话记忆临时拼出来">Response shaped by training data + chat memory</td><td class="yes" data-en="8-question model grounded in your current system" data-zh="8 问模型扎根你当前系统">8-question model grounded in your current system</td></tr>
+        <tr><td class="no" data-en="Guesses tend to sound confident" data-zh="倾向于把猜测包装成自信的结论">Guesses tend to sound confident</td><td class="yes" data-en="facts / assumptions / unknowns, each gap named with an owner" data-zh="事实/假设/未知三分，每个缺口写明找谁确认">facts / assumptions / unknowns, each gap named with an owner</td></tr>
+        <tr><td class="no" data-en="Generic list, drifts every prompt" data-zh="通用清单，换个问法就漂移">Generic list, drifts every prompt</td><td class="yes" data-en="10 dimensions × A–H fallbacks, cut to this system" data-zh="10 维 × A–H 兜底，裁剪到当前系统">10 dimensions × A–H fallbacks, cut to this system</td></tr>
+        <tr><td class="no" data-en="The model decides “that looks wrong”" data-zh="模型说了算“看着不对”">The model decides “that looks wrong”</td><td class="yes" data-en="You define the oracle first — how to judge right/wrong" data-zh="你先定义预言机——凭什么判断对错">You define the oracle first — how to judge right/wrong</td></tr>
+        <tr><td class="no" data-en="Conclusion source" data-zh="结论来源">Conclusion source</td><td class="yes" data-en="Challenger: attacks your first plan, you judge" data-zh="挑战者：攻击你的第一版计划，你来判断">Challenger: attacks your first plan, you judge</td></tr>
+        <tr><td class="no" data-en="Prompt-dependent, changes every ask" data-zh="依赖提示词，每次问都不一样">Prompt-dependent, changes every ask</td><td class="yes" data-en="Deterministic output contract, same structure every run" data-zh="输出契约确定，每次结构一致">Deterministic output contract, same structure every run</td></tr>
+      </tbody>
+    </table>
+    <p class="vs-when" data-en="Use the skill when the system is unfamiliar and a confidently-wrong assumption is costly — you need test directions you can defend, output you can audit, and a generic checklist cut down to this system. A raw prompt is fine when the system is known, the question is narrow and factual, and error is cheap."
+       data-zh="用本技能：系统陌生、自信地错代价高——需要站得住的测试方向、可审计的输出（哪条事实、哪条假设、缺口找谁确认）、把通用清单收窄到当前系统。裸问即可：系统已知、问题窄且偏事实性、答错代价低。">
+      Use the skill when the system is unfamiliar and a confidently-wrong assumption is costly — you need test directions you can defend, output you can audit, and a generic checklist cut down to this system. A raw prompt is fine when the system is known, the question is narrow and factual, and error is cheap.
+    </p>
+  </div>
+</section>
+
 <section id="features">
   <div class="wrap reveal">
-    <div class="sec-head"><span class="no">03</span><h2 data-en="Features" data-zh="功能">Features</h2></div>
+    <div class="sec-head"><span class="no">04</span><h2 data-en="Features" data-zh="功能">Features</h2></div>
     <div class="feat-grid">
       <div class="feat"><div class="ic">🧩</div><h3 data-en="Minimal test model" data-zh="最小测试模型">Minimal test model</h3><p data-en="8 questions that build only what the current task needs; missing items stay Unknown." data-zh="8 问，只建当前任务所需；缺失项保持 Unknown。">8 questions that build only what the current task needs; missing items stay Unknown.</p></div>
       <div class="feat"><div class="ic">🔍</div><h3 data-en="Unknown management" data-zh="未知管理">Unknown management</h3><p data-en="Every gap names who knows and the experiment that verifies it — never papered over." data-zh="每个缺口写明找谁确认、用什么实验验证——绝不掩盖。">Every gap names who knows and the experiment that verifies it — never papered over.</p></div>
@@ -257,7 +280,7 @@
 
 <section id="try">
   <div class="wrap reveal">
-    <div class="sec-head"><span class="no">04</span><h2 data-en="Try it" data-zh="试用">Try it</h2><span class="sub" data-en="pick a command" data-zh="点选命令">pick a command</span></div>
+    <div class="sec-head"><span class="no">05</span><h2 data-en="Try it" data-zh="试用">Try it</h2><span class="sub" data-en="pick a command" data-zh="点选命令">pick a command</span></div>
     <div class="try">
       <div>
         <button class="chip" data-cmd="validate">python3 scripts/validate_skill_package.py unfamiliar-system-testing</button>
@@ -271,7 +294,7 @@
 
 <section id="tree">
   <div class="wrap reveal">
-    <div class="sec-head"><span class="no">05</span><h2 data-en="Structure" data-zh="目录结构">Structure</h2><span class="sub" data-en="click to expand" data-zh="点击展开">click to expand</span></div>
+    <div class="sec-head"><span class="no">06</span><h2 data-en="Structure" data-zh="目录结构">Structure</h2><span class="sub" data-en="click to expand" data-zh="点击展开">click to expand</span></div>
     <ul class="tree" id="treeRoot">
       <li><span class="dir" data-id="d0">unfamiliar-system-testing/</span></li>
     </ul>
@@ -280,7 +303,7 @@
 
 <section id="now">
   <div class="wrap reveal">
-    <div class="sec-head"><span class="no">06</span><h2 data-en="When to use" data-zh="何时使用">When to use</h2><span class="sub" data-en="now" data-zh="当前适用">now</span></div>
+    <div class="sec-head"><span class="no">07</span><h2 data-en="When to use" data-zh="何时使用">When to use</h2><span class="sub" data-en="now" data-zh="当前适用">now</span></div>
     <div class="now-card">
       <div class="clock" id="clock"><span id="hh">00</span>:<span id="mm">00</span>:<span id="ss" class="sec">00</span></div>
       <div class="now-hint" data-en="This companion skill fits whenever you must <b>start testing a system you don't understand yet</b> — onboarding, urgent ticket, or change regression."
