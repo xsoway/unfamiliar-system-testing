@@ -1,0 +1,25 @@
+id: basic-success
+title: 成功：对陌生电商功能建立最小模型并给出测试方向
+description: |
+  用户几乎不了解系统，只有一行需求。应产出最小测试模型、事实/假设/Unknown 三分、happy path 与 failure path 测试点，并给出信息负责人与下一步；不得虚构业务规则。
+
+input:
+  prompt: |
+    请使用 unfamiliar-system-testing。
+    用户请求：一张紧急工单，需求只写「支持用户修改收货地址」。我对这个系统还很陌生，代码/接口/历史缺陷都还没看，业务负责人暂时没空。
+    请帮我建立最小测试模型，列出事实/假设/Unknown，给出该考虑哪些测试点与测试方向，并说明下一步找谁确认。
+
+expect:
+  must_not_contain:
+    - "TODO"
+    - "无法帮助你"
+    - "我做不到"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        any:
+          - "最小测试模型"
+          - "测试点"
+          - "未知"

@@ -1,0 +1,12 @@
+# Normalize line endings for all text files to LF on check-in
+* text=auto eol=lf
+
+# Explicitly mark common text types
+*.md   text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.py   text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+LICENSE text eol=lf

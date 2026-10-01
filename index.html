@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>unfamiliar-system-testing — Start testing what you don't understand yet</title>
+<style>
+  :root{
+    --bg:#1d2021; --bg-2:#282828; --panel:rgba(40,40,40,.72); --panel-2:#32302f;
+    --fg:#ebdbb2; --muted:#a89984; --border:#3c3836;
+    --accent:#d79921; --accent-2:#d8a657; --green:#b8bb26; --red:#fb4934; --blue:#83a598; --purple:#d3869b;
+    --font-display:'Space Grotesk',system-ui,sans-serif; --font-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  [data-accent="green"]{--accent:#b8bb26;--accent-2:#98971a}
+  [data-accent="purple"]{--accent:#d3869b;--accent-2:#b16286}
+  [data-accent="blue"]{--accent:#83a598;--accent-2:#458588}
+  [data-motion="off"] *{animation:none!important;transition:none!important}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-display);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--font-mono)}
+
+  /* backdrop */
+  body::before{content:"";position:fixed;inset:0;z-index:-2;
+    background:radial-gradient(60% 40% at 20% 0%,rgba(215,153,33,.10),transparent 60%),
+               radial-gradient(50% 40% at 85% 100%,rgba(184,187,38,.08),transparent 60%),
+               radial-gradient(circle at 2px 2px,rgba(235,219,178,.05) 1px,transparent 1px);
+    background-size:auto,auto,26px 26px;pointer-events:none}
+  .glow-orb{position:fixed;width:340px;height:340px;border-radius:50%;filter:blur(90px);opacity:.16;z-index:-1;
+    background:radial-gradient(circle,var(--accent),transparent 70%);top:-120px;right:-80px;
+    animation:drift 22s ease-in-out infinite alternate;pointer-events:none}
+  .glow-orb.b{top:auto;bottom:-160px;left:-100px;background:radial-gradient(circle,var(--blue),transparent 70%);animation-delay:-11s}
+  @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-60px,40px) scale(1.15)}}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);background:rgba(29,32,33,.82);border-bottom:1px solid var(--border)}
+  .nav-in{display:flex;align-items:center;gap:18px;height:60px}
+  .brand{font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .brand .dot{color:var(--accent-2)}
+  .nav-links{display:flex;gap:16px;margin-left:auto}
+  .nav-links a{color:var(--muted);font-size:.9rem}
+  .nav-links a:hover{color:var(--fg)}
+  .lang-toggle{cursor:pointer;background:var(--panel-2);border:1px solid var(--border);color:var(--fg);
+    border-radius:8px;padding:4px 10px;font-size:.8rem;white-space:nowrap}
+  .lang-toggle:hover{border-color:var(--accent)}
+
+  /* hero */
+  .hero{padding:72px 0 48px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  .eyebrow{display:inline-block;font-family:var(--font-mono);font-size:.72rem;color:var(--accent-2);
+    border:1px solid var(--border);background:var(--panel);padding:4px 10px;border-radius:6px;letter-spacing:.5px;margin-bottom:18px}
+  h1{font-size:clamp(1.8rem,4.5vw,3rem);line-height:1.12;font-weight:700}
+  h1 .hl{color:var(--accent-2)}
+  .tagline{margin-top:14px;color:var(--muted);font-size:1.05rem;max-width:52ch}
+  .cta{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:8px;font-weight:600;font-size:.92rem}
+  .btn.primary{background:var(--accent);color:#1d2021}
+  .btn.ghost{border:1px solid var(--border);color:var(--fg)}
+  .btn.ghost:hover{border-color:var(--accent);text-decoration:none}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:40px}
+  .metric{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+  .metric .n{font-family:var(--font-mono);font-size:1.7rem;color:var(--accent-2);font-weight:700}
+  .metric .l{font-size:.72rem;color:var(--muted);margin-top:4px}
+
+  /* terminal */
+  .term{background:#141617;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+    box-shadow:0 18px 44px rgba(0,0,0,.45);font-family:var(--font-mono);font-size:.8rem}
+  .term-head{display:flex;align-items:center;gap:8px;background:var(--panel-2);padding:10px 14px;border-bottom:1px solid var(--border)}
+  .term-head .c{width:11px;height:11px;border-radius:50%}
+  .term-head .c:nth-child(1){background:#fb4934}.term-head .c:nth-child(2){background:#d79921}.term-head .c:nth-child(3){background:#b8bb26}
+  .term-head .t{margin-left:8px;color:var(--muted);font-size:.72rem}
+  .term-body{padding:16px;min-height:330px;white-space:pre-wrap;word-break:break-word}
+  .term-body .p{color:var(--green)}
+  .term-body .o{color:var(--muted)}
+  .term-body .ok{color:var(--green)}
+  .cursor{display:inline-block;width:8px;height:15px;background:var(--accent);vertical-align:-2px;animation:blink 1s steps(1) infinite;margin-left:2px}
+  @keyframes blink{50%{opacity:0}}
+
+  section{padding:56px 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:30px}
+  .sec-head .no{font-family:var(--font-mono);color:var(--accent);font-size:.85rem}
+  .sec-head h2{font-size:1.55rem;font-weight:700}
+  .sec-head .sub{color:var(--muted);font-size:.9rem}
+
+  /* flow */
+  .flow-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative}
+  .fnode{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px 12px;text-align:center;
+    opacity:.45;transition:opacity .4s,border-color .4s,transform .4s}
+  .fnode .i{font-family:var(--font-mono);font-size:1.3rem;color:var(--accent-2);display:block;margin-bottom:6px}
+  .fnode .t{font-size:.78rem}
+  .fnode.active{opacity:1;border-color:var(--accent);transform:translateY(-4px)}
+  .arrow{position:absolute;right:-18px;top:50%;transform:translateY(-50%);color:var(--accent-2);font-size:1rem;z-index:2}
+
+  /* pain table */
+  .cmp{width:100%;border-collapse:collapse;font-size:.93rem;background:var(--panel);border-radius:12px;overflow:hidden}
+  .cmp th,.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--border)}
+  .cmp th{background:var(--panel-2);font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;color:var(--accent-2)}
+  .cmp td:first-child{color:var(--muted);width:38%}
+  .cmp tr:last-child td{border-bottom:none}
+  .cmp .no{color:var(--red)}
+  .cmp .yes{color:var(--green)}
+
+  /* features */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .feat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .feat .ic{font-size:1.5rem}
+  .feat h3{font-size:1.02rem;margin:10px 0 6px}
+  .feat p{font-size:.86rem;color:var(--muted)}
+
+  /* try terminal */
+  .try{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+  .chip{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--border);
+    color:var(--fg);border-radius:8px;padding:10px 12px;font-family:var(--font-mono);font-size:.75rem;margin-bottom:8px;cursor:pointer}
+  .chip.active,.chip:hover{border-color:var(--accent);background:var(--panel-2)}
+  .try-terminal{background:#141617;border:1px solid var(--border);border-radius:10px;padding:16px;font-family:var(--font-mono);font-size:.78rem;min-height:120px;white-space:pre-wrap}
+
+  /* tree */
+  .tree{padding-left:0;list-style:none;font-family:var(--font-mono);font-size:.84rem}
+  .tree li{margin:2px 0}
+  .tree .dir{cursor:pointer;color:var(--accent-2);user-select:none}
+  .tree .dir::before{content:"▸ ";color:var(--accent)}
+  .tree .dir.open::before{content:"▾ "}
+  .tree .file{color:var(--fg)}
+  .tree .children{list-style:none;padding-left:20px;display:none;border-left:1px dashed var(--border);margin-left:6px}
+  .tree .dir.open + .children,.tree li > .children.open{display:block}
+  .tree .cfg{color:var(--purple)}
+  .tree .py{color:var(--blue)}
+  .tree .md{color:var(--green)}
+  .tree .yaml{color:#fabd2f}
+
+  /* now / clock */
+  .now-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px;max-width:640px}
+  .clock{font-family:var(--font-mono);font-size:2.4rem;color:var(--accent-2);font-weight:700}
+  .clock .sec{color:var(--muted);font-size:1.2rem}
+  .now-hint{margin-top:10px;color:var(--muted);font-size:.92rem}
+  .now-hint b{color:var(--green)}
+  .banner{display:inline-block;margin-top:14px;background:rgba(184,187,38,.14);color:var(--green);
+    border:1px solid rgba(184,187,38,.4);padding:8px 14px;border-radius:8px;font-size:.86rem}
+
+  /* footer */
+  footer{border-top:1px solid var(--border);padding:36px 0 48px;margin-top:24px}
+  .foot-grid{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .foot-grid .l{color:var(--muted);font-size:.85rem}
+  .foot-links a{margin:0 10px;color:var(--accent-2);font-size:.9rem}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr;padding-top:44px}
+    .flow-row{grid-template-columns:repeat(2,1fr);gap:16px}
+    .fnode{padding:12px 8px}
+    .arrow{display:none}
+    .feat-grid{grid-template-columns:1fr}
+    .try{grid-template-columns:1fr}
+    .metrics{grid-template-columns:repeat(2,1fr)}
+    .nav-links{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body data-lang="en">
+
+<div class="glow-orb"></div><div class="glow-orb b"></div>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="brand" href="#"><span class="dot">◆</span> unfamiliar-system-testing</a>
+    <div class="nav-links">
+      <a href="#flow" data-en="Flow" data-zh="流程">Flow</a>
+      <a href="#why" data-en="Why" data-zh="为什么">Why</a>
+      <a href="#features" data-en="Features" data-zh="功能">Features</a>
+      <a href="#try" data-en="Try" data-zh="试用">Try</a>
+      <a href="#tree" data-en="Structure" data-zh="结构">Structure</a>
+    </div>
+    <button class="lang-toggle" id="langToggle" aria-label="Toggle language">EN ⇄ 中文</button>
+  </div>
+</nav>
+
+<header class="hero wrap">
+  <div>
+    <span class="eyebrow" data-en="CODECX&nbsp;SKILL&nbsp;/&nbsp;QA&nbsp;ONBOARDING" data-zh="CODECX 技能 / QA 上手">CODECX&nbsp;SKILL&nbsp;/&nbsp;QA&nbsp;ONBOARDING</span>
+    <h1 data-en="Start testing what you <span class=&quot;hl&quot;>don't understand yet</span>" data-zh="还不懂的系统，<span class=&quot;hl&quot;>先会测</span>">
+      Start testing what you <span class="hl">don't understand yet</span>
+    </h1>
+    <p class="tagline" data-en="A Codex skill that turns an unfamiliar system into a minimal test model, guided test points, explicit unknowns, and a next step — evidence over instinct."
+       data-zh="一个 Codex 技能：把陌生系统转成最小测试模型、测试方向、显式未知清单和下一步——以证据为准，而非拍脑袋。">
+      A Codex skill that turns an unfamiliar system into a minimal test model, guided test points, explicit unknowns, and a next step — evidence over instinct.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/xulanzhong/unfamiliar-system-testing" data-en="★ Star on GitHub" data-zh="★ 去 GitHub 标星">★ Star on GitHub</a>
+      <a class="btn ghost" href="./README.zh-CN.md" data-en="Read the Docs (中文)" data-zh="阅读文档 (English)">Read the Docs</a>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="n">8</div><div class="l" data-en="minimal-model questions" data-zh="最小模型问题">minimal-model questions</div></div>
+      <div class="metric"><div class="n">10</div><div class="l" data-en="test-point dimensions" data-zh="测试点维度">test-point dimensions</div></div>
+      <div class="metric"><div class="n">12</div><div class="l" data-en="testing techniques" data-zh="测试技术">testing techniques</div></div>
+      <div class="metric"><div class="n">3</div><div class="l" data-en="eval cases" data-zh="评测用例">eval cases</div></div>
+    </div>
+  </div>
+
+  <div class="term" id="heroTerm" aria-label="terminal demo">
+    <div class="term-head"><span class="c"></span><span class="c"></span><span class="c"></span><span class="t">qa@lab — unfamiliar-system-testing</span></div>
+    <div class="term-body" id="heroTermBody"></div>
+  </div>
+</header>
+
+<section id="flow">
+  <div class="wrap">
+    <div class="sec-head"><span class="no">01</span><h2 data-en="How it works" data-zh="怎么工作">How it works</h2><span class="sub" data-en="a guided loop" data-zh="一个被引导的循环">a guided loop</span></div>
+    <div class="flow-row" id="flowRow">
+      <div class="fnode"><span class="i">1</span><span class="t" data-en="Minimal model" data-zh="最小模型">Minimal model</span></div>
+      <div class="fnode"><span class="i">2</span><span class="t" data-en="Test points" data-zh="测试点">Test points</span></div>
+      <div class="fnode"><span class="i">3</span><span class="t" data-en="Business fallback" data-zh="业务兜底">Business fallback</span></div>
+      <div class="fnode"><span class="i">4</span><span class="t" data-en="Theory pick" data-zh="选测试技术">Theory pick</span></div>
+      <div class="fnode"><span class="i">5</span><span class="t" data-en="Oracle first" data-zh="预言机优先">Oracle first</span></div>
+      <div class="fnode"><span class="i">6</span><span class="t" data-en="Next step" data-zh="下一步">Next step</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">02</span><h2 data-en="Why" data-zh="为什么需要">Why</h2><span class="sub" data-en="instinct vs discipline" data-zh="直觉 vs 纪律">instinct vs discipline</span></div>
+    <table class="cmp">
+      <thead><tr><th data-en="Instinct (anti-pattern)" data-zh="直觉（反模式）">Instinct (anti-pattern)</th><th data-en="This skill" data-zh="本技能">This skill</th></tr></thead>
+      <tbody>
+        <tr><td class="no" data-en="Learn the whole architecture first" data-zh="先把整个架构学完再测">Learn the whole architecture first</td><td class="yes" data-en="Minimal model, test as you learn" data-zh="最小模型，边测边学">Minimal model, test as you learn</td></tr>
+        <tr><td class="no" data-en="Copy a generic test-point list" data-zh="照搬通用测试点清单">Copy a generic test-point list</td><td class="yes" data-en="Cut to the current system, mark N/A" data-zh="结合当前系统裁剪，标不适用">Cut to the current system, mark N/A</td></tr>
+        <tr><td class="no" data-en="Old docs / talk taken as truth" data-zh="把旧文档/口述当事实">Old docs / talk taken as truth</td><td class="yes" data-en="Label as assumption, design evidence" data-zh="标为假设，设计证据验证">Label as assumption, design evidence</td></tr>
+        <tr><td class="no" data-en="“I think it’s wrong.”" data-zh="“我觉得错了”">“I think it's wrong.”</td><td class="yes" data-en="Define the oracle first" data-zh="先定义预言机">Define the oracle first</td></tr>
+        <tr><td class="no" data-en="AI generates the plan" data-zh="AI 直接生成计划">AI generates the plan</td><td class="yes" data-en="AI is the challenger, you judge" data-zh="AI 当挑战者，你来判断">AI is the challenger, you judge</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">03</span><h2 data-en="Features" data-zh="功能">Features</h2></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="ic">🧩</div><h3 data-en="Minimal test model" data-zh="最小测试模型">Minimal test model</h3><p data-en="8 questions that build only what the current task needs; missing items stay Unknown." data-zh="8 问，只建当前任务所需；缺失项保持 Unknown。">8 questions that build only what the current task needs; missing items stay Unknown.</p></div>
+      <div class="feat"><div class="ic">🔍</div><h3 data-en="Unknown management" data-zh="未知管理">Unknown management</h3><p data-en="Every gap names who knows and the experiment that verifies it — never papered over." data-zh="每个缺口写明找谁确认、用什么实验验证——绝不掩盖。">Every gap names who knows and the experiment that verifies it — never papered over.</p></div>
+      <div class="feat"><div class="ic">🧭</div><h3 data-en="Failure-path coverage" data-zh="失败路径覆盖">Failure-path coverage</h3><p data-en="Input, permission, dependency, network, state — expanded from one happy path." data-zh="输入/权限/依赖/网络/状态——从一条 happy path 扩展。">Input, permission, dependency, network, state — expanded from one happy path.</p></div>
+      <div class="feat"><div class="ic">🏷️</div><h3 data-en="Business fallbacks" data-zh="业务类型兜底">Business fallbacks</h3><p data-en="e-commerce, payment, CRM, search, IAM, AI/Agent… ⭐ marks the highest-risk points." data-zh="电商、支付、CRM、搜索、IAM、AI/Agent… ⭐ 标记最高风险点。">e-commerce, payment, CRM, search, IAM, AI/Agent… ⭐ marks the highest-risk points.</p></div>
+      <div class="feat"><div class="ic">🎯</div><h3 data-en="Oracle-first discipline" data-zh="预言机优先">Oracle-first discipline</h3><p data-en="Every direction defines how to judge right/wrong; risk scored with impact × likelihood." data-zh="每个方向先定义对错标准；风险用影响×可能性打分。">Every direction defines how to judge right/wrong; risk scored with impact × likelihood.</p></div>
+      <div class="feat"><div class="ic">🤖</div><h3 data-en="AI as challenger" data-zh="AI 当挑战者">AI as challenger</h3><p data-en="AI attacks your first plan; it is never the source of conclusions." data-zh="AI 挑战你的第一版计划，永远不是结论来源。">AI attacks your first plan; it is never the source of conclusions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">04</span><h2 data-en="Try it" data-zh="试用">Try it</h2><span class="sub" data-en="pick a command" data-zh="点选命令">pick a command</span></div>
+    <div class="try">
+      <div>
+        <button class="chip" data-cmd="validate">python3 scripts/validate_skill_package.py unfamiliar-system-testing</button>
+        <button class="chip" data-cmd="run">skill-up run unfamiliar-system-testing</button>
+        <button class="chip" data-cmd="tree">find . -type f | sort</button>
+      </div>
+      <div class="try-terminal" id="tryTerm"></div>
+    </div>
+  </div>
+</section>
+
+<section id="tree">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">05</span><h2 data-en="Structure" data-zh="目录结构">Structure</h2><span class="sub" data-en="click to expand" data-zh="点击展开">click to expand</span></div>
+    <ul class="tree" id="treeRoot">
+      <li><span class="dir" data-id="d0">unfamiliar-system-testing/</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="now">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="no">06</span><h2 data-en="When to use" data-zh="何时使用">When to use</h2><span class="sub" data-en="now" data-zh="当前适用">now</span></div>
+    <div class="now-card">
+      <div class="clock" id="clock"><span id="hh">00</span>:<span id="mm">00</span>:<span id="ss" class="sec">00</span></div>
+      <div class="now-hint" data-en="This companion skill fits whenever you must <b>start testing a system you don't understand yet</b> — onboarding, urgent ticket, or change regression."
+           data-zh="只要你<b>必须在还不懂系统时就开测</b>——新手上手、紧急工单、变更回归——这个伴随技能都适用。">
+        This companion skill fits whenever you must <b>start testing a system you don't understand yet</b> — onboarding, urgent ticket, or change regression.
+      </div>
+      <div class="banner" id="nowBanner" data-en="✔ Not an execution engine — a guided understanding &amp; direction layer" data-zh="✔ 不是执行引擎——而是理解+方向引导层">
+        ✔ Not an execution engine — a guided understanding &amp; direction layer
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="l" data-en="© 2026 xulanzhong · MIT License" data-zh="© 2026 xulanzhong · MIT 许可证">© 2026 xulanzhong · MIT License</div>
+    <div class="foot-links">
+      <a href="./README.md" data-en="README" data-zh="英文 README">README</a>
+      <a href="./README.zh-CN.md" data-en="中文 README" data-zh="中文 README">中文 README</a>
+      <a href="https://github.com/xulanzhong/unfamiliar-system-testing/discussions" data-en="Discussions" data-zh="讨论">Discussions</a>
+      <a href="https://github.com/xulanzhong/unfamiliar-system-testing" data-en="GitHub" data-zh="GitHub">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Tweaks panel -->
+<div class="tweaks-mount"></div>
+
+<script>
+(function(){
+  "use strict";
+  const LANG = document.body.dataset.lang;
+  const toggle = document.getElementById('langToggle');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function applyLang(lang){
+    document.body.dataset.lang = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-en]').forEach(el=>{
+      const txt = el.getAttribute('data-'+lang);
+      if(txt!=null) el.innerHTML = txt;
+    });
+    toggle.textContent = lang==='en' ? '中文' : 'English';
+    // replay hero terminal in the selected language
+    window.dispatchEvent(new CustomEvent('__langchange', { detail: lang }));
+  }
+  toggle.addEventListener('click', ()=> applyLang(document.body.dataset.lang==='en' ? 'zh' : 'en'));
+  // expose for re-type terminal on language switch
+  window.__applyLang = applyLang;
+
+  // ---- hero terminal typing ----
+  const termBody = document.getElementById('heroTermBody');
+  const heroScript = {en:[
+    ['$','git clone .../unfamiliar-system-testing'],
+    ['$','cd unfamiliar-system-testing'],
+    ['$','python3 scripts/validate_skill_package.py unfamiliar-system-testing'],
+    ['✓','PASS: unfamiliar-system-testing package contract'],
+    ['$','skill-up run unfamiliar-system-testing'],
+    ['✓','3/3 eval cases pass — minimal model + unknown mgmt'],
+    ['$','# unknown system? build a minimal model first']
+  ],zh:[
+    ['$','git clone .../unfamiliar-system-testing'],
+    ['$','cd unfamiliar-system-testing'],
+    ['$','python3 scripts/validate_skill_package.py unfamiliar-system-testing'],
+    ['✓','PASS: unfamiliar-system-testing package contract'],
+    ['$','skill-up run unfamiliar-system-testing'],
+    ['✓','3/3 评测用例通过 —— 最小模型 + 未知管理'],
+    ['$','# 陌生系统？先建最小模型再测']
+  ]};
+  let typing, chunks=[];
+  function buildChunks(lang){
+    const lines=heroScript[lang];
+    chunks=[]; let out=[];
+    lines.forEach(l=>{ out.push({cls:l[0],txt:l[1]}); out.push({cls:'n',txt:'\n'}); });
+    // collapse: keep structure; re-stringify
+    chunks = out.map(o=>o);
+  }
+  function typeHero(lang){
+    if(typing) clearInterval(typing);
+    termBody.textContent='';
+    buildChunks(lang);
+    let i=0, s='';
+    typing=setInterval(()=>{
+      if(reduce){ termBody.innerHTML=''; return; }
+      s += chunks[i].txt;
+      termBody.innerHTML = s.split('\n').map(l=>{
+        const esc=l.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+        const m=esc.match(/^(✓)\s?(.*)$/);
+        if(m) return '<span class="ok">'+m[1]+'</span> '+m[2];
+        const p=esc.match(/^\$\s?(.*)$/);
+        if(p) return '<span class="p">$</span> '+p[1];
+        return esc;
+      }).join('<br>') + '<span class="cursor"></span>';
+      i++;
+      if(i>=chunks.length){ clearInterval(typing); termBody.innerHTML += ''; addCursorStatic(); }
+    },90);
+  }
+  function addCursorStatic(){
+    if(!termBody.innerHTML.includes('cursor')) termBody.innerHTML += '<span class="cursor"></span>';
+  }
+  typeHero('en');
+  window.__typeHero=typeHero;
+  window.addEventListener('__langchange',e=>{
+    if(reduce) return;
+    typeHero(e.detail);
+  });
+
+  // ---- flow highlight loop ----
+  const nodes=[...document.querySelectorAll('.fnode')];
+  let fi=0;
+  setInterval(()=>{
+    nodes.forEach((n,i)=>n.classList.toggle('active', i===fi));
+    fi=(fi+1)%nodes.length;
+  },1400);
+
+  // ---- reveal on scroll ----
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} }),{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ---- try terminal ----
+  const tryTerm=document.getElementById('tryTerm');
+  const outputs={
+    validate:['$ python3 scripts/validate_skill_package.py unfamiliar-system-testing','✓ PASS: unfamiliar-system-testing package contract','', 'required files: SKILL.md, prompts/, references/, evals/, agents/, scripts/',
+      'secret scan: 0 hits · absolute-path scan: 0 hits'],
+    run:['$ skill-up run unfamiliar-system-testing','✓ basic-success ........... pass','✓ edge-incomplete-input ... pass','✓ edge-narrow-unknown .... pass','✓ 3/3 eval cases pass'],
+    tree:['$ find . -type f | sort','./SKILL.md','./LICENSE','./README.md','./README.zh-CN.md','./agents/openai.yaml','./evals/eval.yaml','./prompts/unfamiliar-system-testing.md','./references/ai-usage.md','./references/business-type-use-cases.md','./references/heuristics-oracles.md','./references/test-point-dimensions.md','./references/testing-theory-techniques.md','./scripts/validate_skill_package.py']
+  };
+  document.querySelectorAll('.chip').forEach(ch=>{
+    ch.addEventListener('click',()=>{
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      ch.classList.add('active');
+      tryTerm.innerHTML = outputs[ch.dataset.cmd].map(l=>{
+        if(l.startsWith('✓ ')) return '<span class="ok">'+l+'</span>';
+        if(l.startsWith('$ ')) return '<span class="p">$</span> '+l.slice(2);
+        return '<span class="o">'+l+'</span>';
+      }).join('<br>');
+    });
+  });
+  document.querySelector('.chip').classList.add('active');
+  tryTerm.innerHTML = outputs[document.querySelector('.chip').dataset.cmd].map(l=>{
+    if(l.startsWith('✓ ')) return '<span class="ok">'+l+'</span>';
+    if(l.startsWith('$ ')) return '<span class="p">$</span> '+l.slice(2);
+    return '<span class="o">'+l+'</span>';
+  }).join('<br>');
+
+  // ---- clock ----
+  function tick(){const d=new Date();document.getElementById('hh').textContent=String(d.getHours()).padStart(2,'0');document.getElementById('mm').textContent=String(d.getMinutes()).padStart(2,'0');document.getElementById('ss').textContent=String(d.getSeconds()).padStart(2,'0');}
+  tick(); setInterval(tick,1000);
+
+  // ---- tree ----
+  const tree={
+    'unfamiliar-system-testing/':[
+      {t:'SKILL.md',c:'md'},{t:'LICENSE',c:'md'},{t:'README.md',c:'md'},{t:'README.zh-CN.md',c:'md'},
+      {t:'agents/',dir:[{t:'openai.yaml',c:'yaml'}]},
+      {t:'evals/',dir:[
+        {t:'eval.yaml',c:'yaml'},
+        {t:'cases/',dir:[{t:'basic-success.yaml',c:'yaml'},{t:'edge-incomplete-input.yaml',c:'yaml'},{t:'edge-narrow-unknown.yaml',c:'yaml'}]}
+      ]},
+      {t:'prompts/',dir:[{t:'unfamiliar-system-testing.md',c:'md'}]},
+      {t:'references/',dir:[
+        {t:'ai-usage.md',c:'md'},{t:'business-type-use-cases.md',c:'md'},{t:'heuristics-oracles.md',c:'md'},
+        {t:'test-point-dimensions.md',c:'md'},{t:'testing-theory-techniques.md',c:'md'}
+      ]},
+      {t:'scripts/',dir:[{t:'validate_skill_package.py',c:'py'}]}
+    ]
+  };
+  function renderTree(){
+    const root=document.getElementById('treeRoot');
+    root.firstElementChild.remove();
+    function nodeHtml(label,children){
+      if(children){
+        return '<li><span class="dir" data-open="0">'+label+'</span><ul class="children">'+
+          children.map(c=>nodeHtml(c.t,c.dir)).join('')+'</ul></li>';
+      }
+      const c = {md:'md',py:'py',yaml:'yaml'}[label.split('.').pop()]||'file';
+      return '<li><span class="file '+c+'">'+label+'</span></li>';
+    }
+    root.innerHTML='<ul class="tree">'+nodeHtml('unfamiliar-system-testing/', tree['unfamiliar-system-testing/'])+'</ul>';
+    document.querySelectorAll('.tree .dir').forEach(d=>{
+      d.addEventListener('click',()=>{
+        d.classList.toggle('open');
+        const u=d.nextElementSibling; if(u) u.classList.toggle('open');
+      });
+    });
+    return tree;
+  }
+  renderTree();
+
+  // tweaks
+  const mount=document.createElement('div');
+  mount.style.cssText='position:fixed;z-index:60;bottom:16px;right:16px;background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;gap:6px;align-items:center';
+  ['green','purple','blue'].forEach(ac=>{
+    const b=document.createElement('button');b.style.cssText='width:16px;height:16px;border-radius:50%;border:2px solid var(--border);cursor:pointer';
+    b.style.background=ac==='green'?'#b8bb26':ac==='purple'?'#d3869b':'#83a598';
+    b.title='accent '+ac; b.addEventListener('click',()=>document.body.dataset.accent=ac);
+    mount.appendChild(b);
+  });
+  const mo=document.createElement('button');mo.textContent='◇';mo.title='toggle motion';mo.style.cssText='margin-left:6px;background:none;border:1px solid var(--border);color:var(--fg);border-radius:6px;cursor:pointer;width:22px;height:22px';
+  mo.addEventListener('click',()=>{const off=document.body.dataset.motion==='off';document.body.dataset.motion=off?undefined:'off';document.body.style.setProperty('--_mo',off?'':'off');});
+  mount.appendChild(mo);
+  document.body.appendChild(mount);
+})();
+</script>
+</body>
+</html>

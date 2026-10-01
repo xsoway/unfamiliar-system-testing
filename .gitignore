@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# skill-up / local evaluation workspace (rollouts, benchmarks, reports)
+# NOTE: kept here defensively even though it normally lives one level above
+# the repo root; never publish local eval artifacts or absolute host paths.
+.skill-up-workspaces/
+skill-up-workspaces/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# build artifacts
+dist/
+build/

@@ -1,0 +1,24 @@
+id: edge-narrow-unknown
+title: 边界：用户只要求很窄的一步，应聚焦而不越界展开整套系统
+description: |
+  用户只想测一个 Agent 的核心点（工具调用）。应产出针对该窄目标的最小模型、已知 Unknown、failure path 与下一步；不应把整个系统的全部测试点大全铺出来，也不应越权去执行整套 Agent 测试。
+
+input:
+  prompt: |
+    请使用 unfamiliar-system-testing。
+    用户请求：这是一个 AI Agent，我想先了解它「选工具」这一步该测哪些点、往哪测。系统其它部分先不管。
+    请聚焦工具调用这个测试方向，给出测试点、边界与建议的验证实验，并把未知和下一步写到。
+
+expect:
+  must_not_contain:
+    - "TODO"
+    - "无法帮助你"
+    - "我做不到"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        any:
+          - "工具"
+          - "未知"

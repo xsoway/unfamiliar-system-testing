@@ -1,0 +1,24 @@
+id: edge-incomplete-input
+title: 边界：输入信息极不完整时应显式标 Unknown 而非编造
+description: |
+  用户只给极少信息甚至不知道系统用途。应产出能覆盖「未知管理」的最小模型与测试方向，显式列出 Unknown 与信息负责人；禁止虚构业务规则或假装已能确定。
+
+input:
+  prompt: |
+    请使用 unfamiliar-system-testing。
+    用户请求：有一个系统叫「结算中心」，我只知道名字，其它一概不了解，就要我尽快测。请给我测试方向并告诉我该怎么上手。
+
+expect:
+  must_not_contain:
+    - "TODO"
+    - "无法帮助你"
+    - "我做不到"
+
+judge:
+  type: rule_based
+  success:
+    - output_contains:
+        any:
+          - "未知"
+          - "Unknown"
+          - "风险"

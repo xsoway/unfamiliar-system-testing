@@ -1,0 +1,9 @@
+version: 1
+metadata:
+  key: "unfamiliar-system-testing"
+interface:
+  display_name: "Unfamiliar System Testing Guidance"
+  short_description: "Use this skill when a tester must start testing a system they do not yet understand; guides building a minimal test model, prompts what test points and directions to consider, and gives cross-business-type checklists and testing-theory techniques; triggers include 陌生系统测试、不懂的系统怎么测、测试方向、测试点探索、onboarding testing and unfamiliar system testing."
+  default_prompt: "Use the unfamiliar-system-testing skill to build a minimal test model, surface unknown gaps, and generate relevant test points and directions for the unfamiliar system, with structured outputs and practical next steps."
+policy:
+  allow_implicit_invocation: true
