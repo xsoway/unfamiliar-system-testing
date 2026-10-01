@@ -231,7 +231,6 @@ This skill explicitly warns against it when you lack a baseline. It positions AI
 - [x] AI-as-challenger guidance and prompt template
 - [x] Package contract validator + three rule-based eval cases
 - [x] Bilingual README (EN + 中文) and gruvbox-material homepage
-- [ ] English copy of the skill body (currently under `skills/en/testing-workflows/unfamiliar-system-testing/`)
 - [ ] More business-type fallbacks (e.g. fintech, DevOps) and per-type eval cases
 
 ## Contributing

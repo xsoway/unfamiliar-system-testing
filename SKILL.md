@@ -5,8 +5,6 @@ description: Use this skill when a tester must start testing a system they do no
 
 # 陌生系统测试引导（中文版）
 
-**英文版：** 见 `skills/en/testing-workflows/unfamiliar-system-testing/`。
-
 ## 何时使用
 
 - 拿到一个还没理解的新系统 / 新模块 / 紧急工单，需要马上开始测试。

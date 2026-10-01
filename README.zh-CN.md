@@ -231,7 +231,6 @@ skill-up run unfamiliar-system-testing   # 或：skill-up run evals/eval.yaml
 - [x] AI 当挑战者的用法与提示词模板
 - [x] 包契约校验脚本 + 三个规则化评测用例
 - [x] 双语 README（中英文）+ gruvbox-material 主页
-- [ ] skill 正文英文版（当前在 `skills/en/testing-workflows/unfamiliar-system-testing/`）
 - [ ] 更多业务类型兜底（如金融科技、DevOps）与逐类型评测用例
 
 ## 贡献指南
