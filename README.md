@@ -30,6 +30,7 @@
 - [Structure](#structure)
 - [Quick Start](#quick-start)
 - [Example](#example)
+- [Skill vs Asking a Raw LLM](#skill-vs-asking-a-raw-llm)
 - [Features](#features)
 - [Safety & Design Principles](#safety--design-principles)
 - [Validating & Testing](#validating--testing)
@@ -57,6 +58,27 @@ Starting tests on an unfamiliar system usually ends with either a blank page or 
 | Pretend certainty without enough info | Write unknowns explicitly, name who can confirm |
 | "I think that's wrong" with no basis | Define the oracle (how to judge right/wrong) first |
 | Outsource judgment to AI | AI is a challenger/reviewer, never the conclusion source |
+
+## Skill vs Asking a Raw LLM
+
+Both can "generate test points". The difference is what shapes the output — a fixed skill contract grounded in *your* system, or whatever the raw chat window happens to produce.
+
+| Aspect | Asking a raw LLM | This skill |
+|---|---|---|
+| What shapes the output | whatever the model's training data + current chat memory drags in | a fixed 8-question minimal model grounded in *your* system |
+| Facts vs assumptions | tends to present guesses as confident conclusions | forces a **facts / assumptions / unknowns** triage; unknowns are written with an owner and a way to verify |
+| Test breadth | generic list, drifts per prompt | 10 dimensions × A–H fallbacks **cut to the current system**, mark "N/A" explicitly |
+| How "wrong" is judged | the model says "that looks wrong" | you define the **oracle first** — how to judge right/wrong for this system |
+| Where AI sits | conclusion source | **challenger**: attacks your first plan, you judge each suggestion |
+| Repeatability | prompt-dependent, changes every ask | deterministic output contract, same structure every run |
+
+**Use the skill instead of a raw prompt when:**
+- The system is unfamiliar and "confidently wrong assumptions" would be costly.
+- You need test *directions* you can defend, not just a pile of cases.
+- You want output you can audit: which fact, which assumption, who confirms each gap.
+- You must take a generic checklist down to *this* system and mark what doesn't apply.
+
+**A raw prompt is fine when:** you already understand the system, the question is narrow and factual, and a wrong-but-confident answer carries little cost.
 
 ## Core Concepts
 
