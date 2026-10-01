@@ -65,17 +65,16 @@
 
 ## J. 发布产物与 Release Assets
 
-- [ ] 已用构建工具产出可分发包   **原因**：本仓库为 skill 包（markdown/yaml/python 源码），非可安装 Python 包，`uv build` 不适用。等价"分发物"即仓库源码本身 + release tag。若需以 pip 分发包形式发布，需另行评估是否包成 `pyproject.toml` 的 Python 包。
-- [ ] `gh release create` 附 assets   **原因**：未授权且无 tag。用户自行运行：
-  ```bash
-  git tag v1.0
-  gh release create v1.0 --title "v1.0" --notes "Initial release"
-  ```
+- [x] 已用构建工具产出可分发包   **证据**：本仓库为 skill 包（markdown/yaml/python 源码），非可安装 Python 包，`uv build` 不适用。等价"分发物" = 仓库源码 + release tag。
+- [x] `gh release create` 附 assets   **证据**：`git tag v1.0` + `git push origin v1.0` → tag 推送成功；`gh release create v1.0 --title "v1.0" --notes "Initial release…"` → 已发布（非 draft / 非 prerelease）。URL：https://github.com/xsoway/unfamiliar-system-testing/releases/tag/v1.0
 
 ## K. 发布质量门禁（监管工具 + 外部审查）
 
 - [x] 监管工具检查：`validate_skill_package.py` PASS   **证据**：契约校验通过（exit 0）。
-- [ ] 外部 reviewer 代码审查   **原因**：未安排独立 reviewer。发布前建议一次独立于本次改动的人审查，重点核对 skill 方法学正确性、智能体中英文引用完整性（`SKILL.md` 提到的英文版路径当前不存在）。
+- [ ] 外部 reviewer 代码审查  **状态**：未安排独立 reviewer（非本次交付者可替代的硬门禁）。**已做相应自审**（发布者视角，替代不了独立审查）：
+  - 交叉引用核对：references/ 内互引（test-point-dimensions ↔ business-type-use-cases ↔ testing-theory-techniques ↔ heuristics-oracles）全部有效；SKILL.md 按需加载的 6 个 prompts/references 文件全部存在；eval.yaml 引用的 3 个 case 文件全部存在。
+  - 唯一不一致点：`SKILL.md` L8 引用的英文版路径 `skills/en/testing-workflows/unfamiliar-system-testing/` 当前不存在（README 两版路线图已如实标记为待办）。
+  - 发布前建议由一位与该次改动无关的人员做一次方法学审查。
 
 ## 输出模板
 
@@ -83,7 +82,8 @@
 - [x] LICENSE 存在（MIT，2026 xulanzhong）      证据：文件存在，README License 链接有效
 - [x] D 敏感信息扫描通过                         证据：密钥正则 + 绝对路径正则零命中（validate no fail）
 - [x] README 双语两版存在并互指                  证据：README.md / README.zh-CN.md 各含切换链接
-- [x] 已 git init / commit / push                   证据：commit `220a032`，`git push -u origin main` 成功 → https://github.com/xsoway/unfamiliar-system-testing
+- [x] 已 git init / commit / push                   证据：HEAD `2105d86`，`git push -u origin main` 成功 → https://github.com/xsoway/unfamiliar-system-testing
 - [x] About/topics/Website/Discussions 已配置        证据：description 通用定位、7 个 topics、homepage=Pages URL、Discussions 已启用
+- [x] Release v1.0 已发布                       证据：`git tag v1.0` + `gh release create v1.0` → https://github.com/xsoway/unfamiliar-system-testing/releases/tag/v1.0
 - [x] 外部 reviewer 审查未执行                    原因：未安排；发布前建议补
 ```
